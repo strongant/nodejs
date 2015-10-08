@@ -5,10 +5,11 @@
 var mongodb=require("./db");
 //moment
 var moment = require('moment');
-function Post(username,post,time){
-    console.log('comehere:'+post);
+function Post(username,post,time,id){
+    console.log('come here:'+post);
     this.user=username;
     this.post=post;
+    this._id = id;
     //如果时间为空则设置为当前时间
     if(time){
         this.time=time;
@@ -17,6 +18,7 @@ function Post(username,post,time){
         this.time=moment().format('YYYY-MM-DD HH:mm:ss');
     }
 }
+
 //读取指定用户下的微博信息
 Post.find=function(username,callback){
     mongodb.open(function(err,db){
@@ -43,7 +45,7 @@ Post.find=function(username,callback){
                 //封装posts为Post对象
                 var posts=[];
                 docs.forEach(function(doc,index){
-                    var post=new Post(doc.user,doc.post,doc.time);
+                    var post=new Post(doc.user,doc.post,doc.time,doc._id);
                     posts.push(post);
                 });
                 callback(null,posts);
@@ -82,3 +84,33 @@ Post.prototype.save=function save(callback){
         });
     });
 };
+/**
+ * 删除博客信息
+ * @param callback
+ */
+Post.prototype.deleteBlog = function(callback,post){
+    //需要删除的post对象
+    mongodb.open(function(err,db){
+        if(err){
+            return callback(err);
+        }
+        //删除当前文档
+        db.collection('posts',function(err,collection){
+            if(err){
+                mongodb.close();
+                return callback(err);
+            }
+            //ObjectID类型的field进行删除方法
+            var ObjectID = require('mongodb').ObjectID;
+            console.log('post._id:'+post._id);
+            var obj_id = new ObjectID(post._id);
+            console.log('obj_id:'+obj_id);
+            //删除当前post
+            collection.remove({"_id":obj_id}, {safe:true},function(err,count){
+                mongodb.close();
+                console.log('count:'+count);
+                return callback(err,count);
+            });
+        });
+    });
+}

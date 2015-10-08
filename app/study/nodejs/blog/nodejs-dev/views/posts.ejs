@@ -4,8 +4,18 @@
     <%}%>
     <div class="span4">
         <h2><a href="/u/<%=post.user%>"><%=post.user %></a>说</h2>
-        <p><small><%=post.time%></small></p>
-        <p><%=post.post%></p>
+        <p>
+        <small><%=post.time%></small>
+        </p>
+        <p>
+            <%if(user.name){%>
+                  <span  class='col-sm-11'><%=post.post%></span>
+                  <a class='col-sm-1' href='/delete/blog/<%= post._id %>'>删除</a>
+            <%}else{%>
+            <span><%=post.post%></span>
+            <%}%>
+        </p>
+
     </div>
      <% if(index % 3 == 2){%>
         </div> <!--结束行-->

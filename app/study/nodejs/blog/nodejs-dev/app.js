@@ -73,6 +73,8 @@ app.post('/doReg',routes.doReg); //执行注册
 app.get('/login',routes.login);//用户登录
 app.post('/doLogin',routes.doLogin); //执行登陆
 app.get('/logout',routes.logout);//用户退出
+
+app.get('/delete/blog/:id',routes.deleteBlog)
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });

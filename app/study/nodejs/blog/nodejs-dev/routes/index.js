@@ -31,7 +31,8 @@ exports.user=function(req,res){
       }
       res.render('user',{
         title:user.name,
-        posts:posts
+        posts:posts,
+        name:user.name
       });
     });
   });
@@ -50,6 +51,33 @@ exports.post=function(req,res){
     });
 
 };
+
+/**
+ * 删除用户发布的微博信息
+ * @param req
+ * @param res
+ */
+exports.deleteBlog =  function(req,res){
+  var currentUser = req.session.user;
+  if(!currentUser){
+    req.session.error = '当前用户没有登陆，请登陆后执行此操作';
+    return res.redirect("/");
+  }
+  //构造需要删除的blog对象
+  var post = new Post(null,null,null,req.params.id);
+  console.log('post:'+post._id);
+  post.deleteBlog(function(err,count){
+    console.log('err: '+err);
+    console.log('delete ok count:'+count);
+    if(err){
+      req.session.error = err;
+      return res.redirect('/');
+    }
+    req.session.success = '删除博客信息成功';
+    return res.redirect('/u/'+currentUser.name);
+  },post);
+}
+
 /**
  * 跳转注册页面
  * @param req
